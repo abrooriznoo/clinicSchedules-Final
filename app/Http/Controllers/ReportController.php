@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Doctors;
+use App\Models\Patients;
+use App\Models\PatientsSchedules;
+use App\Models\Schedules;
+
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
@@ -12,7 +17,11 @@ class ReportController extends Controller
      */
     public function index()
     {
-        return view('assets.report');
+        $patients = Patients::with('users')->get();
+        $doctors = Doctors::with('users')->get();
+        $patientsSchedules = PatientsSchedules::with(['patient.users', 'doctor.users', 'schedules.doctor.users'])->get();
+
+        return view('assets.report', compact('patients', 'doctors', 'patientsSchedules'));
     }
 
     /**

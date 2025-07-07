@@ -78,7 +78,7 @@
                             <div class="flex justify-between items-center">
                                 <div>
                                     <p class="text-gray-500">Total Appointments</p>
-                                    <h3 class="text-2xl font-bold text-blue-800" id="total-appointments">24</h3>
+                                    <h3 class="text-2xl font-bold text-blue-800">{{ $patientsSchedules->count() }}</h3>
                                 </div>
                                 <div class="bg-blue-100 p-3 rounded-full">
                                     <i class="fas fa-calendar-check text-blue-600"></i>
@@ -90,7 +90,7 @@
                             <div class="flex justify-between items-center">
                                 <div>
                                     <p class="text-gray-500">Completed</p>
-                                    <h3 class="text-2xl font-bold text-green-800" id="completed-appointments">18</h3>
+                                    <h3 class="text-2xl font-bold text-green-800" id="completed-appointments">{{ $patientsSchedules->where('status', 0)->count() }}</h3>
                                 </div>
                                 <div class="bg-green-100 p-3 rounded-full">
                                     <i class="fas fa-check-circle text-green-600"></i>
@@ -102,7 +102,7 @@
                             <div class="flex justify-between items-center">
                                 <div>
                                     <p class="text-gray-500">Pending</p>
-                                    <h3 class="text-2xl font-bold text-orange-800" id="pending-appointments">6</h3>
+                                    <h3 class="text-2xl font-bold text-orange-800" id="pending-appointments">{{ $patientsSchedules->where('status', 1)->count() }}</h3>
                                 </div>
                                 <div class="bg-orange-100 p-3 rounded-full">
                                     <i class="fas fa-clock text-orange-600"></i>
@@ -129,9 +129,79 @@
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200" id="appointments-body">
-                                    <!-- Data will be inserted here by JavaScript -->
+                                <!-- <tbody class="bg-white divide-y divide-gray-200" id="appointments-body"> -->
+                                @php
+                                    $no = 1;
+                                    @endphp
+                                @foreach ($patientsSchedules as $schedule) :
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $no++ }}.</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                                    <img src="{{ asset('storage/' . $schedule->patient->users->photo) }}" alt="patient-photo" class="rounded-full object-cover h-10 w-10">
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">{{ $schedule->patient->users->name }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                                    <img src="{{ asset('storage/' . $schedule->schedules->doctor->users->photo) }}" alt="patient-photo" class="rounded-full object-cover h-10 w-10">
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">{{ $schedule->schedules->doctor->users->name }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($schedule->created_at)->format('d M Y') }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($schedule->created_at)->format('H:i') }} WIB</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">
+                                                        @if ($schedule->status == 1)
+                                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">
+                                                                Pending
+                                                            </span>
+                                                        @elseif ($schedule->status == 2)
+                                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                                                Cancelled
+                                                            </span>
+                                                        @else
+                                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                                                Completed
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">{{ $schedule->notes ? $schedule->notes : "No Notes"}}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 </tbody>
+                                @endforeach
                             </table>
                         </div>
                     </div>
@@ -201,16 +271,9 @@
 
         <script>
             // Sample data
-            const appointments = [
-                { id: 1, patient: "John Doe", doctor: "Dr. Sarah Johnson", date: "2023-06-15", time: "09:00 AM", status: "completed", notes: "Regular checkup", statusClass: "bg-green-100 text-green-800" },
-                { id: 2, patient: "Jane Smith", doctor: "Dr. Michael Chen", date: "2023-06-15", time: "10:30 AM", status: "completed", notes: "Follow-up visit", statusClass: "bg-green-100 text-green-800" },
-                { id: 3, patient: "Robert Johnson", doctor: "Dr. Sarah Johnson", date: "2023-06-15", time: "11:15 AM", status: "pending", notes: "Initial consultation", statusClass: "bg-yellow-100 text-yellow-800" },
-                { id: 4, patient: "Maria Garcia", doctor: "Dr. Lisa Wong", date: "2023-06-15", time: "01:30 PM", status: "pending", notes: "Annual physical", statusClass: "bg-yellow-100 text-yellow-800" },
-                { id: 5, patient: "David Wilson", doctor: "Dr. Michael Chen", date: "2023-06-15", time: "02:45 PM", status: "completed", notes: "Vaccination", statusClass: "bg-green-100 text-green-800" },
-                { id: 6, patient: "Emily Davis", doctor: "Dr. Sarah Johnson", date: "2023-06-15", time: "04:00 PM", status: "canceled", notes: "Patient rescheduled", statusClass: "bg-red-100 text-red-800" },
-                { id: 7, patient: "James Brown", doctor: "Dr. Lisa Wong", date: "2023-06-16", time: "08:30 AM", status: "pending", notes: "Blood test results", statusClass: "bg-yellow-100 text-yellow-800" },
-                { id: 8, patient: "Patricia Miller", doctor: "Dr. Michael Chen", date: "2023-06-16", time: "10:00 AM", status: "completed", notes: "Prescription refill", statusClass: "bg-green-100 text-green-800" },
-            ];
+            const appointments = @json($patientsSchedules);
+
+            console.log(appointments);
 
             // DOM elements
             const appointmentsBody = document.getElementById('appointments-body');
@@ -228,20 +291,20 @@
             reportDate.value = today.toISOString().split('T')[0];
 
             // Initial render
-            renderAppointments(appointments);
+            // renderAppointments(appointments);
 
             // Render appointments function
-            function renderAppointments(data) {
+            function renderAppointments(appointments) {
                 appointmentsBody.innerHTML = '';
                 
-                if (data.length === 0) {
+                if (appointments.length === 0) {
                     emptyState.classList.remove('hidden');
                     return;
                 } else {
                     emptyState.classList.add('hidden');
                 }
                 
-                data.forEach((appointment, index) => {
+                appointments.forEach((a, index) => {
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-gray-50 transition';
                     row.innerHTML = `
@@ -252,27 +315,27 @@
                                     <i class="fas fa-user text-blue-600"></i>
                                 </div>
                                 <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">${appointment.patient}</div>
+                                    <div class="text-sm font-medium text-gray-900">${a.patient.users.name}</div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">${appointment.doctor}</div>
+                            <div class="text-sm text-gray-900">${a.schedules.doctor.users}</div>
                             <div class="text-sm text-gray-500">Cardiology</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            ${formatDate(appointment.date)}
+                            ${formatDate(a.date)}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            ${appointment.time}
+                            ${a.time}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 py-1 text-xs font-medium rounded-full ${appointment.statusClass}">
-                                ${capitalizeFirstLetter(appointment.status)}
+                            <span class="px-2 py-1 text-xs font-medium rounded-full ${a.statusClass}">
+                                ${capitalizeFirstLetter(a.status)}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-xs truncate">
-                            ${appointment.notes}
+                            ${a.notes}
                         </td>
                     `;
                     appointmentsBody.appendChild(row);
