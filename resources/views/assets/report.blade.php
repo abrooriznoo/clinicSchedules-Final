@@ -5,37 +5,45 @@
             width: 6px;
             height: 6px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 10px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #9ca3af;
             border-radius: 10px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #6b7280;
         }
-        
+
         /* Print styles */
         @media print {
             body * {
                 visibility: hidden;
             }
-            #schedule-report, #schedule-report * {
+
+            #schedule-report,
+            #schedule-report * {
                 visibility: visible;
             }
+
             #schedule-report {
                 position: absolute;
                 left: 0;
                 top: 0;
                 width: 100%;
             }
+
             .no-print {
                 display: none !important;
             }
         }
     </style>
+
     <body class="bg-gray-50 min-h-screen">
         <div class="container mx-auto px-4 py-8">
             <div class="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -47,29 +55,33 @@
                             <p class="text-blue-100 mt-1">Daily patient appointments report</p>
                         </div>
                         <div class="mt-4 md:mt-0 flex items-center space-x-3">
-                            <button onclick="printReport()" class="no-print bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition flex items-center">
+                            <button onclick="printReport()"
+                                class="no-print bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition flex items-center">
                                 <i class="fas fa-print mr-2"></i> Print Report
                             </button>
-                            <button onclick="filterData()" class="no-print bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition flex items-center">
+                            <button onclick="filterData()"
+                                class="no-print bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition flex items-center">
                                 <i class="fas fa-filter mr-2"></i> Filter
                             </button>
                         </div>
                     </div>
-                    
+
                     <!-- Date selector -->
                     <div class="mt-6 flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:space-x-4">
                         <div class="flex items-center bg-white bg-opacity-20 rounded-lg p-2">
                             <i class="fas fa-calendar-alt text-white mr-2"></i>
-                            <input type="date" id="report-date" class="bg-transparent text-white placeholder-blue-200 outline-none border-none">
+                            <input type="date" id="report-date"
+                                class="bg-transparent text-white placeholder-blue-200 outline-none border-none">
                         </div>
-                        
+
                         <div class="flex items-center bg-white bg-opacity-20 rounded-lg p-2 w-full md:w-auto">
                             <i class="fas fa-search text-white mr-2"></i>
-                            <input type="text" id="search-input" placeholder="Search patient or doctor..." class="bg-transparent text-white placeholder-blue-200 outline-none border-none w-full">
+                            <input type="text" id="search-input" placeholder="Search patient or doctor..."
+                                class="bg-transparent text-white placeholder-blue-200 outline-none border-none w-full">
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Report content -->
                 <div id="schedule-report" class="p-6">
                     <!-- Summary cards -->
@@ -85,24 +97,26 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="bg-green-50 rounded-lg p-4 border-l-4 border-green-500">
                             <div class="flex justify-between items-center">
                                 <div>
                                     <p class="text-gray-500">Completed</p>
-                                    <h3 class="text-2xl font-bold text-green-800" id="completed-appointments">{{ $patientsSchedules->where('status', 0)->count() }}</h3>
+                                    <h3 class="text-2xl font-bold text-green-800" id="completed-appointments">
+                                        {{ $patientsSchedules->where('status', 0)->count() }}</h3>
                                 </div>
                                 <div class="bg-green-100 p-3 rounded-full">
                                     <i class="fas fa-check-circle text-green-600"></i>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="bg-orange-50 rounded-lg p-4 border-l-4 border-orange-500">
                             <div class="flex justify-between items-center">
                                 <div>
                                     <p class="text-gray-500">Pending</p>
-                                    <h3 class="text-2xl font-bold text-orange-800" id="pending-appointments">{{ $patientsSchedules->where('status', 1)->count() }}</h3>
+                                    <h3 class="text-2xl font-bold text-orange-800" id="pending-appointments">
+                                        {{ $patientsSchedules->where('status', 1)->count() }}</h3>
                                 </div>
                                 <div class="bg-orange-100 p-3 rounded-full">
                                     <i class="fas fa-clock text-orange-600"></i>
@@ -110,102 +124,130 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Filter chips -->
                     <div class="flex flex-wrap gap-2 mb-6 no-print" id="filter-chips"></div>
-                    
+
                     <!-- Table -->
                     <div class="border rounded-xl overflow-hidden custom-scrollbar">
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No.</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Doctor</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visit Date</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            No.</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Patient</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Doctor</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Visit Date</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Time</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Status</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Notes</th>
                                     </tr>
                                 </thead>
                                 <!-- <tbody class="bg-white divide-y divide-gray-200" id="appointments-body"> -->
                                 @php
                                     $no = 1;
-                                    @endphp
+                                @endphp
                                 @foreach ($patientsSchedules as $schedule) :
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $no++ }}.</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                                    <img src="{{ asset('storage/' . $schedule->patient->users->photo) }}" alt="patient-photo" class="rounded-full object-cover h-10 w-10">
-                                                </div>
-                                                <div class="ml-4">
-                                                    <div class="text-sm font-medium text-gray-900">{{ $schedule->patient->users->name }}</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                                    <img src="{{ asset('storage/' . $schedule->schedules->doctor->users->photo) }}" alt="patient-photo" class="rounded-full object-cover h-10 w-10">
-                                                </div>
-                                                <div class="ml-4">
-                                                    <div class="text-sm font-medium text-gray-900">{{ $schedule->schedules->doctor->users->name }}</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="ml-4">
-                                                    <div class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($schedule->created_at)->format('d M Y') }}</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="ml-4">
-                                                    <div class="text-sm font-medium text-gray-900">{{ \Carbon\Carbon::parse($schedule->created_at)->format('H:i') }} WIB</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="ml-4">
-                                                    <div class="text-sm font-medium text-gray-900">
-                                                        @if ($schedule->status == 1)
-                                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">
-                                                                Pending
-                                                            </span>
-                                                        @elseif ($schedule->status == 2)
-                                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
-                                                                Cancelled
-                                                            </span>
-                                                        @else
-                                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                                                Completed
-                                                            </span>
-                                                        @endif
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $no++ }}.</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div
+                                                        class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                                        <img src="{{ asset('storage/' . $schedule->patient->users->photo) }}"
+                                                            alt="patient-photo" class="rounded-full object-cover h-10 w-10">
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900">
+                                                            {{ $schedule->patient->users->name }}</div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="ml-4">
-                                                    <div class="text-sm font-medium text-gray-900">{{ $schedule->notes ? $schedule->notes : "No Notes"}}</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div
+                                                        class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                                        <img src="{{ asset('storage/' . $schedule->schedules->doctor->users->photo) }}"
+                                                            alt="patient-photo" class="rounded-full object-cover h-10 w-10">
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900">
+                                                            {{ $schedule->schedules->doctor->users->name }}</div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900">
+                                                            {{ \Carbon\Carbon::parse($schedule->created_at)->format('d M Y') }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900">
+                                                            {{ \Carbon\Carbon::parse($schedule->created_at)->format('H:i') }}
+                                                            WIB</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900">
+                                                            @if ($schedule->status == 1)
+                                                                <span
+                                                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">
+                                                                    Pending
+                                                                </span>
+                                                            @elseif ($schedule->status == 2)
+                                                                <span
+                                                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                                                    Cancelled
+                                                                </span>
+                                                            @else
+                                                                <span
+                                                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                                                    Completed
+                                                                </span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900">
+                                                            {{ $schedule->notes ? $schedule->notes : "No Notes"}}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
                                 @endforeach
                             </table>
                         </div>
                     </div>
-                    
+
                     <!-- Empty state -->
                     <div id="empty-state" class="hidden py-12 text-center">
                         <i class="fas fa-calendar-times text-gray-300 text-5xl mb-4"></i>
@@ -215,9 +257,10 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Filter modal -->
-        <div id="filter-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div id="filter-modal"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
                 <div class="p-6">
                     <div class="flex justify-between items-center mb-4">
@@ -226,42 +269,50 @@
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    
+
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Doctor</label>
-                            <select id="doctor-filter" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <select id="doctor-filter"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                 <option value="">All Doctors</option>
-                                <option value="Dr. Sarah Johnson">Dr. Sarah Johnson</option>
-                                <option value="Dr. Michael Chen">Dr. Michael Chen</option>
-                                <option value="Dr. Lisa Wong">Dr. Lisa Wong</option>
+                            <?php
+                                foreach ($doctors as $doctor) {
+                                    echo "<option value=\"{$doctor->id}\">{$doctor->users->name}</option>";
+                                };
+                            ?>
                             </select>
                         </div>
-                        
+
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                            <select id="status-filter" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <select id="status-filter"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                 <option value="">All Statuses</option>
                                 <option value="completed">Completed</option>
                                 <option value="pending">Pending</option>
                                 <option value="canceled">Canceled</option>
                             </select>
                         </div>
-                        
+
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
                             <div class="grid grid-cols-2 gap-2">
-                                <input type="date" id="start-date" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                <input type="date" id="end-date" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <input type="date" id="start-date"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <input type="date" id="end-date"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="mt-6 flex justify-end space-x-3">
-                        <button onclick="resetFilters()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        <button onclick="resetFilters()"
+                            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
                             Reset
                         </button>
-                        <button onclick="applyFilters()" class="px-4 py-2 bg-blue-600 rounded-md text-sm font-medium text-white hover:bg-blue-700">
+                        <button onclick="applyFilters()"
+                            class="px-4 py-2 bg-blue-600 rounded-md text-sm font-medium text-white hover:bg-blue-700">
                             Apply Filters
                         </button>
                     </div>
@@ -296,14 +347,14 @@
             // Render appointments function
             function renderAppointments(appointments) {
                 appointmentsBody.innerHTML = '';
-                
+
                 if (appointments.length === 0) {
                     emptyState.classList.remove('hidden');
                     return;
                 } else {
                     emptyState.classList.add('hidden');
                 }
-                
+
                 appointments.forEach((a, index) => {
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-gray-50 transition';
@@ -340,7 +391,7 @@
                     `;
                     appointmentsBody.appendChild(row);
                 });
-                
+
                 updateSummaryStats(data);
             }
 
@@ -376,10 +427,10 @@
                 document.getElementById('status-filter').value = '';
                 document.getElementById('start-date').value = '';
                 document.getElementById('end-date').value = '';
-                
+
                 // Remove all filter chips
                 filterChipsContainer.innerHTML = '';
-                
+
                 // Reset to original data
                 renderAppointments(appointments);
             }
@@ -389,18 +440,18 @@
                 const statusFilter = document.getElementById('status-filter').value;
                 const startDate = document.getElementById('start-date').value;
                 const endDate = document.getElementById('end-date').value;
-                
+
                 let filteredData = [...appointments];
-                
+
                 // Apply filters
                 if (doctorFilter) {
                     filteredData = filteredData.filter(appointment => appointment.doctor === doctorFilter);
                 }
-                
+
                 if (statusFilter) {
                     filteredData = filteredData.filter(appointment => appointment.status === statusFilter);
                 }
-                
+
                 if (startDate && endDate) {
                     filteredData = filteredData.filter(appointment => {
                         const apptDate = new Date(appointment.date);
@@ -409,7 +460,7 @@
                         return apptDate >= filterStartDate && apptDate <= filterEndDate;
                     });
                 }
-                
+
                 // Update UI
                 renderAppointments(filteredData);
                 updateFilterChips(doctorFilter, statusFilter, startDate, endDate);
@@ -418,15 +469,15 @@
 
             function updateFilterChips(doctor, status, startDate, endDate) {
                 filterChipsContainer.innerHTML = '';
-                
+
                 if (doctor) {
                     addFilterChip(`Doctor: ${doctor}`, 'doctor');
                 }
-                
+
                 if (status) {
                     addFilterChip(`Status: ${capitalizeFirstLetter(status)}`, 'status');
                 }
-                
+
                 if (startDate && endDate) {
                     addFilterChip(`Date: ${formatDate(startDate)} to ${formatDate(endDate)}`, 'date');
                 }
@@ -452,17 +503,17 @@
             // Search functionality
             searchInput.addEventListener('input', (e) => {
                 const searchTerm = e.target.value.toLowerCase();
-                
+
                 if (!searchTerm) {
                     renderAppointments(appointments);
                     return;
                 }
-                
-                const filtered = appointments.filter(appointment => 
-                    appointment.patient.toLowerCase().includes(searchTerm) || 
+
+                const filtered = appointments.filter(appointment =>
+                    appointment.patient.toLowerCase().includes(searchTerm) ||
                     appointment.doctor.toLowerCase().includes(searchTerm)
                 );
-                
+
                 renderAppointments(filtered);
             });
 
